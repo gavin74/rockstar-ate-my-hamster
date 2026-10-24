@@ -15,28 +15,30 @@ hook API. This is the first milestone, not a playable game yet.
 | Band hiring, equipment, contracts | `Rules+Core.swift` §2 to §8 | not ported |
 | Records, releases, charts | `Rules+Records.swift`, `Rules+Events.swift` | not ported |
 | Random events, sponsors, scandals | `Rules+Events.swift`, `NewEvents.swift` | not ported |
-| Game data loader (`gamedata.json`, tape records) | `GameData.swift`, `Assets.swift` | not ported |
+| Game data loader (`gamedata.json`) | `GameData.swift` | shape check done, `src/data.ts`, `src/node.ts` |
+| Tape records, portraits | `Assets.swift` | not ported |
 | Browser UI | `Game.swift`, `Screen.swift`, `SidePanel.swift` | not started |
 
 Known gaps in the port:
 - `startNewCareerYear` resets only the chart, disc and release fields it needs for this milestone. The Swift version also resets recording and track fields. Those will be added with the records port.
 - Money caps at 99,999,999 instead of wrapping on carry, following the Swift code and the notes it cites (`INFERRED` there).
 
-## Run the tests
+## Run the tests and the demo
 
 Requires Node 22.6 or later.
 
     cd web
     npm test
+    node --experimental-strip-types bin/play-year.ts path/to/gamedata.json 300,250
 
-Tests use the built-in test runner and Node's type stripping, so there are no dependencies to install.
+Tests use the built-in test runner and Node's type stripping, so there are no dependencies to install. The demo plays one year with a band of the given weekly wages and prints the ledger. It needs a generated `gamedata.json`, which the tests do not.
 
 ## Data
 
 The rules read tables that the original code keeps in RAM. Users generate them from their own tapes with the existing Python tools. Nothing from the game is committed here.
 
 1. Run `tools/setup_assets.sh` on your own side A and side B `.tzx` files, as the repo README describes.
-2. The generated `Sources/RockStar/Resources/gamedata.json` is the input for the web loader. The loader is not written yet.
+2. The generated `Sources/RockStar/Resources/gamedata.json` is the input for `parseGameData` (browser-safe) and `loadGameDataFile` (Node).
 
 ## Extension points
 

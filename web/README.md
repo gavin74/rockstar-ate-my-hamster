@@ -37,6 +37,8 @@ Tests use the built-in test runner and Node's type stripping, so there are no de
 
 The rules read tables that the original code keeps in RAM. Users generate them from their own tapes with the existing Python tools. Nothing from the game is committed here.
 
+**Synthetic test data.** `fixtures/synthetic/` holds fake tapes and a fake `gamedata.json`, made by `tools/synthetic/make_fixtures.py`. They match the formats, so the parsers and tests can run without the original game. They are not game data. See `fixtures/synthetic/README.md` for what they can and cannot check.
+
 1. Run `tools/setup_assets.sh` on your own side A and side B `.tzx` files, as the repo README describes.
 2. The generated `Sources/RockStar/Resources/gamedata.json` is the input for `parseGameData` (browser-safe) and `loadGameDataFile` (Node).
 

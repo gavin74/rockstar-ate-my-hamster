@@ -10,18 +10,21 @@ hook API. This is the first milestone, not a playable game yet.
 | SpectrumRNG (table-weighted `rnd`) | `SpectrumRNG.swift` | done, `src/rng.ts` |
 | Config and difficulty | `GameState.swift` | done, `src/config.ts` |
 | Calendar, wages, money | `Rules+Core.swift` §1, §5 | done, `src/calendar.ts` |
-| Career year roll-over | `Career.swift` | done, `src/career.ts` (partial reset, see below) |
+| Career year roll-over | `Career.swift` | done, `src/career.ts` |
 | Mod hook host | none | `src/plugins.ts`, `src/turn.ts` |
 | Band hiring, equipment, contracts | `Rules+Core.swift` §2 to §8 | not ported |
-| Records, releases, charts | `Rules+Records.swift`, `Rules+Events.swift` | not ported |
+| Recording, releases, rival and player charts, royalties and discs | `Rules+Records.swift` | done, `src/records.ts` (name text via `catalog.titleFor`) |
 | Random events, sponsors, scandals | `Rules+Events.swift`, `NewEvents.swift` | not ported |
+| Text expansion (message and name strings) | `GameData.swift` `expand` | not ported; `titleFor` is injected |
 | Game data loader (`gamedata.json`) | `GameData.swift` | shape check done, `src/data.ts`, `src/node.ts` |
 | Tape records, portraits | `Assets.swift` | not ported |
 | Browser UI | `Game.swift`, `Screen.swift`, `SidePanel.swift` | not started |
 
 Known gaps in the port:
-- `startNewCareerYear` resets only the chart, disc and release fields it needs for this milestone. The Swift version also resets recording and track fields. Those will be added with the records port.
 - Money caps at 99,999,999 instead of wrapping on carry, following the Swift code and the notes it cites (`INFERRED` there).
+- Rival title text comes from `catalog.titleFor`. The Swift `expand` also resolves random word groups, which is part of the text port.
+- `newGame` does not run the boot step. Call `bootCharts(state)` once after it, as the Swift init does.
+- Faithful bugs ported so far: the wage bill's slot choice (`wageBill`), the producer ransom's 10^6 digit test (`producerRansomDue`), and the chart quirk that lands a 0 gap one place down (`movePlayerSingle`).
 
 ## Run the tests and the demo
 

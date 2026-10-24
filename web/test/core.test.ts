@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { SpectrumRNG } from "../src/rng.ts";
-import { newGame, gameDecided } from "../src/state.ts";
+import { newGame, gameDecided, catalogFrom } from "../src/state.ts";
 import { advanceDay, wageBill, payWages, charge, dateText } from "../src/calendar.ts";
 import { retireChance, startNewCareerYear } from "../src/career.ts";
 import { ModHost, type Mod } from "../src/plugins.ts";
@@ -12,9 +12,24 @@ import { stepDay } from "../src/turn.ts";
 const TABLE = Array.from({ length: 64 }, (_, i) => i % 16);
 const rng = () => new SpectrumRNG(TABLE, 1n);
 
+// Minimal catalog: 30 rivals with zeroed entries and 10 rank values.
+const catalog = () =>
+  catalogFrom({
+    rngTable: TABLE,
+    rivals: Array.from({ length: 30 }, () => ({ single: [0, 0, 0, 0, 0], album: [0, 0, 0, 0, 0], songChoices: [0, 0], albumTitle: 0 })),
+    respawnScores: [25, 45, 33, 21, 19, 36],
+    respawnStart: 3,
+    nameStrings: [],
+    bandNames: [],
+    videoRankTable: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    fameRankTable: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    royaltyPercent: [255, 10, 20, 30, 40, 50],
+    studioDays: [5, 4, 3, 2, 2, 1],
+  });
+
 // A playable game: newGame() starts with an empty band, which counts as decided.
 const band = (cfg: Partial<GameConfig> = {}) => {
-  const s = newGame(rng(), cfg);
+  const s = newGame(rng(), catalog(), cfg);
   s.stars = 4;
   s.gone = [false, false, false, false];
   return s;

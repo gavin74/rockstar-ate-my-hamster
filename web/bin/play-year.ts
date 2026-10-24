@@ -2,7 +2,8 @@
 // Usage: node --experimental-strip-types bin/play-year.ts <gamedata.json> [wage,wage,...]
 import { loadGameDataFile } from "../src/node.ts";
 import { SpectrumRNG } from "../src/rng.ts";
-import { newGame, gameDecided } from "../src/state.ts";
+import { newGame, gameDecided, catalogFrom } from "../src/state.ts";
+import { bootCharts } from "../src/records.ts";
 import { ModHost } from "../src/plugins.ts";
 import { stepDay } from "../src/turn.ts";
 import { dateText } from "../src/calendar.ts";
@@ -13,7 +14,8 @@ if (!path) {
   process.exit(1);
 }
 const data = loadGameDataFile(path);
-const s = newGame(new SpectrumRNG(data.rngTable, 7n));
+const s = newGame(new SpectrumRNG(data.rngTable, 7n), catalogFrom(data));
+bootCharts(s);
 const wages = wageArg.split(",").map(Number);
 s.stars = wages.length;
 s.gone = [0, 1, 2, 3].map((i) => i >= wages.length);

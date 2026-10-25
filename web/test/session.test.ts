@@ -21,6 +21,7 @@ test("scripted year: record, promote, release a single with a budget video, rele
   assert.equal(session.releaseAlbum().ok, true);
   assert.equal(session.state.albumReleased, true);
 
+  if (session.pendingOffer !== null) assert.equal(session.answerOffer(true).ok, true);
   session.advanceDays(365);
   assert.equal(session.over, true);
   assert.ok(session.royaltyTotal > 0, "a top-ten single should earn royalties");

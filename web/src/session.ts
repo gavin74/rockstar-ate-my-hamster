@@ -9,7 +9,9 @@ import { ModHost, type Mod } from "./plugins.ts";
 import * as R from "./records.ts";
 import { SpectrumRNG } from "./rng.ts";
 import { catalogFrom, gameDecided, newGame, type GameState } from "./state.ts";
+import { LABEL_NAMES } from "./band.ts";
 import { stepDay } from "./turn.ts";
+import { acceptStar, answerContract, buyEquipment, contractOffer, formBand, gearCosts, type StarStats } from "./band.ts";
 
 export type Result = { ok: true; message: string } | { ok: false; message: string };
 
@@ -23,6 +25,20 @@ export type VideoChoice = keyof typeof VIDEOS;
 
 export const PROMO_COST = 5_000;
 
+/**
+ * Slice band: four invented stars (not the original roster). Stats are
+ * [portrait, voice, ability, mood, kind, wage digits 5...8]. Together they give
+ * skill 62 and fame 50, enough for a tier 1 record offer.
+ */
+export const SLICE_BAND: StarStats[] = [
+  { name: "Dana Vox", stats: [30, 1, 50, 60, 0x20 | 2, 0, 0, 3, 0] },
+  { name: "Sol Reed", stats: [20, 2, 50, 60, 0x40 | 1, 0, 0, 2, 5] },
+  { name: "Ines Kade", stats: [20, 3, 50, 60, 0x80 | 2, 0, 0, 2, 0] },
+  { name: "Tom Brisk", stats: [20, 4, 50, 60, 1, 0, 0, 1, 5] },
+];
+
+export const LABEL_NAMES_UI = LABEL_NAMES;
+
 export const STUDIOS = ["Garage (£2k)", "Small studio (£5k)", "Studio (£10k)", "Big studio (£16k)", "Pro studio (£20k)", "Top studio (£50k)"];
 
 export class Session {
@@ -32,6 +48,8 @@ export class Session {
   readonly log: string[] = [];
   /** Royalty income credited so far this year (for the summary and tests). */
   royaltyTotal = 0;
+  /** A record offer waiting for an answer (tier 1...5). */
+  pendingOffer: number | null = null;
 
   constructor(data: GameData, opts: { seed?: bigint; config?: Partial<GameConfig>; mods?: Mod[] } = {}) {
     const titleFor = (ref: number) => {
@@ -41,12 +59,10 @@ export class Session {
     const catalog = catalogFrom(data, titleFor);
     // Slice default: easy money (£100k), until the band hiring and contracts are ported.
     this.state = newGame(new SpectrumRNG(data.rngTable, opts.seed ?? 1n), catalog, { difficulty: "easy", ...opts.config });
-    // Slice band: four stars with fixed weekly wages (pounds).
-    this.state.stars = 4;
-    this.state.gone = [false, false, false, false];
-    this.state.wages = [300, 250, 200, 150];
-    // Slice shortcut: the band starts on contract tier 1. Contracts are not ported yet, and tier 0 pays no royalties.
-    this.state.label = 1;
+    // Slice band: the invented roster above, hired and formed as in the original.
+    this.state.hiredCount = SLICE_BAND.length;
+    SLICE_BAND.forEach((star, slot) => acceptStar(this.state, star, slot));
+    formBand(this.state);
     R.bootCharts(this.state);
     this.host = new ModHost([
       {
@@ -75,6 +91,11 @@ export class Session {
     const s = this.state;
     const outcome = stepDay(s, this.host);
     if (outcome === "sunday") {
+      const tier = contractOffer(s);
+      if (tier !== null) {
+        this.pendingOffer = tier;
+        this.note(`A record label offers a tier ${tier} contract (${LABEL_NAMES[tier]}). Accept or decline.`);
+      }
       if (s.singleReleased || s.albumReleased) {
         for (const chart of R.runChartShow(s)) this.reportChart(chart);
       }
@@ -161,6 +182,26 @@ export class Session {
     R.hypeUp(s);
     this.note(`Promo push. Hype is now ${s.hype}.`);
     return { ok: true, message: `Promo push done. Hype ${s.hype}.` };
+  }
+
+  /** Accept or decline the pending record offer. */
+  answerOffer(accept: boolean): Result {
+    if (this.pendingOffer === null) return fail("No offer is waiting.");
+    const tier = this.pendingOffer;
+    answerContract(this.state, accept);
+    this.pendingOffer = null;
+    this.note(accept ? `Signed to ${LABEL_NAMES[tier]}. Advance paid.` : `Declined ${LABEL_NAMES[tier]}.`);
+    return { ok: true, message: accept ? "Contract signed." : "Offer declined." };
+  }
+
+  /** Buy equipment at quality 0 (new), 1 (second hand) or 2 (dodgy). */
+  buyGear(quality: number): Result {
+    if (this.over) return fail("The game is over.");
+    const cost = gearCosts(this.state)[quality];
+    if (this.state.cash < cost) return fail(`That kit costs £${cost}.`);
+    buyEquipment(this.state, quality);
+    this.note(`Bought equipment for £${cost}.`);
+    return { ok: true, message: `Equipment bought for £${cost}.` };
   }
 
   /** Charge a fee outside the rules (for the cheat menu and tests). */

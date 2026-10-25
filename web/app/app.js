@@ -1,5 +1,5 @@
 // Browser shell for the playable slice. Uses the built modules in dist/.
-import { Session, STUDIOS, VIDEOS } from "./session.js";
+import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI } from "./session.js";
 
 const $ = (id) => document.getElementById(id);
 let session;
@@ -30,8 +30,11 @@ function render() {
   $("fame").textContent = s.fame;
   $("single").textContent = s.singleReleased ? pos(s.singlePos) : "-";
   $("album").textContent = s.albumReleased ? pos(s.albumPos) : s.albumInCan ? "in can" : "-";
+  const offer = session.pendingOffer;
+  $("offerRow").hidden = offer === null;
+  if (offer !== null) $("offerText").textContent = "Record offer: tier " + offer + " (" + LABEL_NAMES_UI[offer] + ").";
   const over = session.over;
-  for (const id of ["day", "week", "year", "record", "single", "release", "promo"]) $(id).disabled = over;
+  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn"]) $(id).disabled = over;
   const log = $("log");
   log.innerHTML = "";
   session.log.slice(-200).reverse().forEach((line) => {
@@ -55,6 +58,10 @@ async function start() {
   $("single").onclick = () => show(session.releaseSingle(Number($("track").value), $("video").value));
   $("release").onclick = () => show(session.releaseAlbum());
   $("promo").onclick = () => show(session.promote());
+  fill($("gear"), [[0, "New"], [1, "Second hand"], [2, "Dodgy"]]);
+  $("gearBuy").onclick = () => show(session.buyGear(Number($("gear").value)));
+  $("signBtn").onclick = () => show(session.answerOffer(true));
+  $("declineBtn").onclick = () => show(session.answerOffer(false));
   render();
 }
 

@@ -66,8 +66,27 @@ export interface GameState {
   salesHistory: number[];
 
   // band
+  /** $BF25 stars chosen at the start of the band */
+  hiredCount: number;
   /** $BF24 stars still in the band */
   stars: number;
+  /** Per slot: portrait ($BEF7), voice ($BEFF), ability ($BF03), mood ($BF0B), instrument kind ($BF13) */
+  image: number[];
+  imageBak: number[];
+  voice: number[];
+  ability: number[];
+  abilityBak: number[];
+  mood: number[];
+  kind: number[];
+  /** $BF28 band name, $C558 star names */
+  bandName: string;
+  starNames: string[];
+  /** $BEF2 first music voice */
+  bandVoice: number;
+  /** $BEB9 0 new, 1 second hand, 2 dodgy */
+  equipment: number;
+  /** $BEE9...$BEF0: offer already made, by tier 1...5 */
+  offerMade: boolean[];
   /** $619D per slot: true = empty / fired / quit / dead */
   gone: boolean[];
   /** $613F weekly wage per slot in pounds */
@@ -157,7 +176,20 @@ export function newGame(rng: SpectrumRNG, catalog: Catalog, config: Partial<Game
     week: 0,
     yearOver: false,
     salesHistory: new Array(52).fill(0),
+    hiredCount: 0,
+    bandName: "",
+    starNames: ["", "", "", ""],
     stars: 0,
+    image: [0, 0, 0, 0],
+    imageBak: [0, 0, 0, 0],
+    voice: [0, 0, 0, 0],
+    ability: [0, 0, 9, 7],
+    abilityBak: [0, 0, 9, 7],
+    mood: [0, 0, 0, 0],
+    kind: [0, 0, 0, 0],
+    bandVoice: 0,
+    equipment: 0,
+    offerMade: [false, false, false, false, false, false],
     gone: emptyBand(),
     wages: [0, 0, 0, 0],
     skill: 0,

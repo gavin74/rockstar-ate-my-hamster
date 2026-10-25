@@ -6,7 +6,7 @@
   "description": "Web port of the Rock Star Ate My Hamster rules core, with a mod hook API.",
   "license": "MIT",
   "scripts": {
-    "test": "node --experimental-strip-types --test test/core.test.ts test/data.test.ts test/fixtures.test.ts test/records.test.ts test/remake.test.ts test/session.test.ts"
+    "test": "node --experimental-strip-types --test test/core.test.ts test/data.test.ts test/fixtures.test.ts test/records.test.ts test/remake.test.ts test/session.test.ts test/band.test.ts"
   },
   "engines": { "node": ">=22.6" }
 }

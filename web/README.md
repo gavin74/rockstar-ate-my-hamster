@@ -16,7 +16,7 @@ hook API and a small playable slice in the browser.
 | Hiring from a star roster | `Rules+Core.swift` §4.1, `StarCreator.swift` | hire screen done, 20 invented stars in `data/remake-gamedata.json` |
 | Recording, releases, rival and player charts, royalties and discs | `Rules+Records.swift` | done, `src/records.ts` (name text via `catalog.titleFor`) |
 | Gigs, tours, practice, disasters | `Rules+Events.swift` (practice, disasters, gigs) | done, `src/gigs.ts` |
-| Mood checks, demands, ultimatums, trouble, gifts | `Rules+Events.swift` | done, `src/events.ts`; auto-answered on tour |
+| Mood checks, demands, ultimatums, trouble, gifts | `Rules+Events.swift` | done, `src/events.ts`; the tour asks you to pay or refuse |
 | Publicity, headlines, sponsors, scandals, charity, bootlegs | `Rules+Events.swift` | done, `src/events.ts`; headline text not ported |
 | Event scheduling (per Sunday) | `$6ADF` | done, `Session.periodicEvents` |
 | Text expansion (message and name strings) | `GameData.swift` `expand` | not ported; `titleFor` is injected |
@@ -32,9 +32,9 @@ Known gaps in the port:
 - `newGame` does not run the boot step. Call `bootCharts(state)` once after it, as the Swift init does.
 - The remake roster is invented and untuned. Some hires will not reach the contract thresholds (skill 60, fame 40).
 - The slice's remaining shortcut is easy money by default.
-- Demands and ultimatums on tour are paid when affordable and refused otherwise. A player choice is not offered yet.
-- Bootleg prompts only offer "sue" (1) and "ignore" (0). The raid and pay-off options exist in `answerBootleg` but have no buttons.
-- Headline and message text is not ported. The log shows the outcome in plain words.
+- Headlines and log lines are the remake's own wording (`src/headlines.ts`). The original's message text is not used.
+- Gig economics use the original's constants (venue hire, ticket prices, demand). Early tours lose money in the remake, so these need tuning.
+- The page shows a kit re-buy request only through the kit controls; `pendingRebuy` is set but not displayed.
 - After equipment is lost, re-buying kit (msg 116) is not ported. The loss is logged only.
 - Faithful bugs ported so far: the wage bill's slot choice (`wageBill`), the producer ransom's 10^6 digit test (`producerRansomDue`), and the chart quirk that lands a 0 gap one place down (`movePlayerSingle`).
 
@@ -49,7 +49,7 @@ The slice is one band of four stars with fixed wages, on easy money (£100k). Ac
 - **Record album**: pick a studio. Days pass for each track.
 - **Promo push** (£5k, +1 hype): a remake lever, not in the original. Hype speeds chart climbs.
 - **Buy kit**: new, second hand or dodgy, priced by the instruments the stars play.
-- **Tour**: five nights at a venue with a ticket price. Venue hire is charged up front, a disaster can strike before a show, and each show earns takings.
+- **Tour**: five nights at a venue with a ticket price. Venue hire is charged up front. Click **Play next night** to go one night at a time. A star's demand or ultimatum stops the tour until you pay or refuse.
 - **Practise**: three days at £100 a day. Raises skill and lowers hype.
 - **Release single**: pick a recorded track and a video tier.
 - **Release album**: once it is in the can.

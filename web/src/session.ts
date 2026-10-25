@@ -14,6 +14,7 @@ import { stepDay } from "./turn.ts";
 import { acceptStar, answerContract, buyEquipment, contractOffer, formBand, gearCosts, type StarStats } from "./band.ts";
 import { VENUE_NAMES, TICKET_PRICES, startPractice, practiceDay, startTour, playGig, disasterCheck, type Disaster } from "./gigs.ts";
 import * as E from "./events.ts";
+import { HEADLINES } from "./headlines.ts";
 
 export type Result = { ok: true; message: string } | { ok: false; message: string };
 
@@ -61,6 +62,17 @@ export class Session {
   pendingSponsor: number | null = null;
   pendingCharity = false;
   pendingBootleg = false;
+  /** A demand or ultimatum from a star, waiting for pay or refuse. */
+  pendingMood: { kind: "demand" | "ultimatum"; slot: number; cost: number } | null = null;
+  /** Kit was lost; the band must buy kit again. */
+  pendingRebuy = false;
+  /** Whether a tour is running (for the page). */
+  get touring(): boolean {
+    return this.tourLeft !== null;
+  }
+
+  /** The tour in progress, if any. */
+  private tourLeft: { venue: number; price: number; night: number; nights: number } | null = null;
 
   constructor(data: GameData, opts: { seed?: bigint; config?: Partial<GameConfig>; mods?: Mod[]; band?: StarStats[] } = {}) {
     const titleFor = (ref: number) => {
@@ -136,7 +148,7 @@ export class Session {
     if (due === "bootleg" && E.bootlegEligible(s)) {
       E.startBootleg(s);
       this.pendingBootleg = true;
-      this.note("Bootleggers are copying the album. Choose a response.");
+      this.note(HEADLINES.bootlegs + " Choose a response.");
     }
     if (this.pendingSponsor === null && s.sponsor === 0) {
       const c = E.sponsorOffer(s);
@@ -146,7 +158,7 @@ export class Session {
       }
     }
     const scandal = E.sponsorScandalTick(s);
-    if (scandal !== null) this.note(`A scandal breaks about sponsor ${E.SPONSOR_NAMES[scandal - 1]}. Fame halved.`);
+    if (scandal !== null) this.note(HEADLINES.scandal);
     if (E.sponsorPullOutDue(s)) {
       E.sponsorPullOut(s);
       this.note("The sponsor pulled out and charged £100,000.");
@@ -167,8 +179,8 @@ export class Session {
     if (!this.pendingCharity) return fail("No charity is waiting.");
     const r = E.answerCharity(this.state, accept);
     this.pendingCharity = false;
-    this.note(r.real ? "The charity was genuine." : "The charity was a scam.");
-    if (r.headline !== null) this.note(r.headline === 193 ? "Bad press: the band turned down a real charity." : "Bad press: the charity was a scam.");
+    this.note(r.real ? HEADLINES.charityGenuine : HEADLINES.charityScam);
+    if (r.headline !== null) this.note(r.headline === 193 ? HEADLINES.badPressCharity : HEADLINES.charityScam);
     return { ok: true, message: "Charity answered." };
   }
 
@@ -177,7 +189,8 @@ export class Session {
     if (!this.pendingBootleg) return fail("No bootleg is waiting.");
     const r = E.resolveBootleg(this.state, choice);
     this.pendingBootleg = false;
-    this.note(`Bootleg response ${choice}: cost £${r.cost}.`);
+    const plan = ["ignored them", "sued", "raided them", "paid them off"][choice] ?? "dealt with them";
+    this.note(`The band ${plan}. Cost £${r.cost}.`);
     return { ok: true, message: `Bootleg dealt with. Cost £${r.cost}.` };
   }
 
@@ -185,7 +198,7 @@ export class Session {
   publicity(): Result {
     if (this.over) return fail("The game is over.");
     const r = E.publicityStunt(this.state);
-    this.note(r.kind === "nobodyCares" ? `Publicity: headline ${r.headline}, nobody cares.` : `Publicity: headline ${r.headline}${r.died ? ", a star died" : ""}.`);
+    this.note(r.kind === "nobodyCares" ? HEADLINES.publicityNobody : r.died ? HEADLINES.publicityDeath : HEADLINES.publicityStory);
     return { ok: true, message: "Publicity done." };
   }
 
@@ -278,6 +291,7 @@ export class Session {
     const cost = gearCosts(this.state)[quality];
     if (this.state.cash < cost) return fail(`That kit costs £${cost}.`);
     buyEquipment(this.state, quality);
+    this.pendingRebuy = false;
     this.note(`Bought equipment for £${cost}.`);
     return { ok: true, message: `Equipment bought for £${cost}.` };
   }
@@ -293,20 +307,55 @@ export class Session {
     return { ok: true, message: `Practised for ${days} days.` };
   }
 
-  /** Tour: pay the venue for `nights`, then play one show a night. Disasters are checked before each show. */
-  tour(venue: number, price: number, nights: number): Result {
+  /** Tour: pay the venue for `nights`. Then call playNight() for each night. */
+  beginTour(venue: number, price: number, nights: number): Result {
     const s = this.state;
     if (this.over) return fail("The game is over.");
+    if (this.tourLeft) return fail("A tour is already running.");
     if (!startTour(s, venue, nights)) return fail("The band cannot pay the venue hire.");
+    this.tourLeft = { venue, price, night: 0, nights };
     this.note(`Touring: ${VENUE_NAMES[venue]}, tickets £${TICKET_PRICES[price]}, ${nights} nights.`);
-    for (let night = 1; night <= nights && !this.over; night++) {
-      this.moodCheck();
-      if (this.over) break;
-      const disaster = disasterCheck(s);
-      if (disaster) this.reportDisaster(disaster);
-      const r = playGig(s, venue, price);
-      this.note(`Night ${night}: ${r.tickets} sold, £${r.takings} taken. Cash £${s.cash}.`);
-      this.advanceDay();
+    return { ok: true, message: "Tour started." };
+  }
+
+  /** Play one night. Stops for a demand or ultimatum until it is answered. */
+  playNight(): Result {
+    const t = this.tourLeft;
+    if (!t) return fail("No tour is running.");
+    if (this.pendingMood) return fail("Answer the star first.");
+    const s = this.state;
+    t.night += 1;
+    this.moodCheck();
+    if (this.pendingMood || this.over) return { ok: true, message: "A star is waiting for an answer." };
+    const disaster = disasterCheck(s);
+    if (disaster) this.reportDisaster(disaster);
+    const r = playGig(s, t.venue, t.price);
+    this.note(`Night ${t.night}: ${r.tickets} sold, £${r.takings} taken. Cash £${s.cash}.`);
+    this.advanceDay();
+    if (t.night >= t.nights || this.over) this.tourLeft = null;
+    return { ok: true, message: `Night ${t.night} played.` };
+  }
+
+  /** Answer a star's demand (pay) or ultimatum (pay keeps the star; refusing fires them). */
+  answerMood(pay: boolean): Result {
+    const m = this.pendingMood;
+    if (!m) return fail("No star is waiting.");
+    const s = this.state;
+    if (m.kind === "demand") E.answerDemand(s, m.slot, m.cost, pay);
+    else E.answerUltimatum(s, m.slot, m.cost, pay);
+    this.note(`${s.starNames[m.slot]} ${pay ? "was paid off" : "was refused"} (£${m.cost}).`);
+    this.pendingMood = null;
+    return { ok: true, message: pay ? "Paid." : "Refused." };
+  }
+
+  /** Tour in one call: every night played, with demands paid when affordable. */
+  tour(venue: number, price: number, nights: number): Result {
+    const started = this.beginTour(venue, price, nights);
+    if (!started.ok) return started;
+    while (this.tourLeft && !this.over) {
+      const r = this.playNight();
+      if (this.pendingMood) this.answerMood(this.state.cash >= this.pendingMood.cost);
+      if (!r.ok) break;
     }
     return { ok: true, message: "Tour finished." };
   }
@@ -320,23 +369,24 @@ export class Session {
       return;
     }
     if (ev.kind === "quits") {
-      this.note("A star quit the band. Fame halved.");
+      this.note(`${s.starNames[ev.slot]} quit the band. Fame halved.`);
     } else if (ev.kind === "demand" || ev.kind === "ultimatum") {
-      const pay = s.cash >= ev.cost;
-      if (ev.kind === "demand") E.answerDemand(s, ev.slot, ev.cost, pay);
-      else E.answerUltimatum(s, ev.slot, ev.cost, pay);
-      this.note(`${s.starNames[ev.slot]} wants changes (£${ev.cost}). ${pay ? "Paid." : "Refused."}`);
+      this.pendingMood = { kind: ev.kind, slot: ev.slot, cost: ev.cost };
+      this.note(`${HEADLINES.demand} ${s.starNames[ev.slot]} asks £${ev.cost} to stay happy.`);
     } else {
       const jailed = E.troubleHeadline(s);
       E.payStarBill(s, ev.slot, ev.cost);
-      this.note(`${s.starNames[ev.slot]} got into trouble and ${jailed ? "was jailed" : "wrecked a hotel"}. Bill £${ev.cost}.`);
+      this.note(`${jailed ? HEADLINES.trouble.jailed : HEADLINES.trouble.wrecked} Bill £${ev.cost}.`);
     }
   }
 
   private reportDisaster(d: Disaster) {
-    if (d.kind === "sued") this.note("The band was sued. £1,000,000 paid.");
-    else if (d.kind === "taxman") this.note("The taxman called. £1,000,000 paid.");
-    else this.note("Equipment lost. Buy kit again (re-buying is not ported yet).");
+    if (d.kind === "sued") this.note(HEADLINES.sued);
+    else if (d.kind === "taxman") this.note(HEADLINES.taxman);
+    else {
+      this.pendingRebuy = true;
+      this.note(HEADLINES.equipmentLost + " Buy kit again.");
+    }
   }
 
   /** Charge a fee outside the rules (for the cheat menu and tests). */

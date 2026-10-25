@@ -105,3 +105,28 @@ test("a scripted tour runs its nights and keeps the log", () => {
   assert.ok(session.log.length >= before + 6);
   assert.ok(session.log.some((l) => l.startsWith("Night 5:")));
 });
+
+test("a tour stops for a demand until it is answered, then carries on", () => {
+  const session = new Session(data, { seed: 77n });
+  session.beginTour(0, 0, 5);
+  let guard = 0;
+  while (!session.pendingMood && session.touring && guard++ < 200) session.playNight();
+  if (session.pendingMood) {
+    assert.equal(session.playNight().ok, false); // blocked until answered
+    assert.equal(session.answerMood(false).ok, true);
+  }
+  let nights = 0;
+  while (session.touring && guard++ < 400) {
+    const r = session.playNight();
+    if (session.pendingMood) session.answerMood(true);
+    if (r.ok) nights++;
+  }
+  assert.equal(session.touring, false);
+});
+
+test("equipment lost asks for kit again, and buying kit clears the request", () => {
+  const session = new Session(data, { seed: 8n });
+  session.pendingRebuy = true;
+  assert.equal(session.buyGear(0).ok, true);
+  assert.equal(session.pendingRebuy, false);
+});

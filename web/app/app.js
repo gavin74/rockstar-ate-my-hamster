@@ -1,8 +1,11 @@
-// Browser shell for the playable slice. Uses the built modules in dist/.
+// Browser shell for the remake. Uses the built modules in dist/.
 import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI, VENUE_NAMES_UI, TICKET_PRICES_UI, SPONSOR_NAMES_UI } from "./session.js";
 
 const $ = (id) => document.getElementById(id);
+const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 let session;
+let data;
 
 function fill(select, options) {
   select.innerHTML = "";
@@ -19,10 +22,61 @@ function show(result) {
   render();
 }
 
+function quiet(fn) {
+  $("msg").textContent = "";
+  fn();
+  render();
+}
+
+/** The one open question, if any: a sponsor, a charity, a bootleg, or a star's demand. */
+function prompt() {
+  if (session.pendingMood) {
+    const m = session.pendingMood;
+    const name = session.state.starNames[m.slot];
+    return {
+      text: `${name} ${m.kind === "demand" ? "wants changes" : "gives an ultimatum"}: £${m.cost}.`,
+      buttons: [
+        ["Pay", () => show(session.answerMood(true)), true],
+        ["Refuse", () => show(session.answerMood(false)), false],
+      ],
+    };
+  }
+  if (session.pendingSponsor !== null) {
+    return {
+      text: `Sponsor offer: ${SPONSOR_NAMES_UI[session.pendingSponsor]}.`,
+      buttons: [
+        ["Accept (£100k)", () => show(session.answerSponsorOffer(true)), true],
+        ["Decline", () => show(session.answerSponsorOffer(false)), false],
+      ],
+    };
+  }
+  if (session.pendingCharity) {
+    return {
+      text: "A charity asks the band to play for free.",
+      buttons: [
+        ["Accept", () => show(session.answerCharityOffer(true)), true],
+        ["Decline", () => show(session.answerCharityOffer(false)), false],
+      ],
+    };
+  }
+  if (session.pendingBootleg) {
+    return {
+      text: "Bootleggers are copying the album.",
+      buttons: [
+        ["Sue", () => show(session.answerBootleg(1)), true],
+        ["Raid", () => show(session.answerBootleg(2)), false],
+        ["Pay them off", () => show(session.answerBootleg(3)), false],
+        ["Ignore", () => show(session.answerBootleg(0)), false],
+      ],
+    };
+  }
+  return null;
+}
+
 function render() {
   const s = session.state;
   const pos = (p) => (p === 0 ? "-" : p <= 10 ? `#${p}` : `out (${p})`);
-  $("date").textContent = `${["MON","TUE","WED","THU","FRI","SAT","SUN"][s.dayOfWeek]} ${String(s.dayOfMonth).padStart(2, "0")} ${["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][s.month]}`;
+  $("date").textContent = `${DAYS[s.dayOfWeek]} ${String(s.dayOfMonth).padStart(2, "0")} ${MONTHS[s.month]}`;
   $("cash").textContent = `£${s.cash.toLocaleString("en-GB")}`;
   $("wages").textContent = `£${session.weeklyWages().toLocaleString("en-GB")}`;
   $("hype").textContent = s.hype;
@@ -30,16 +84,33 @@ function render() {
   $("fame").textContent = s.fame;
   $("single").textContent = s.singleReleased ? pos(s.singlePos) : "-";
   $("album").textContent = s.albumReleased ? pos(s.albumPos) : s.albumInCan ? "in can" : "-";
+
   const offer = session.pendingOffer;
   $("offerRow").hidden = offer === null;
-  if (offer !== null) $("offerText").textContent = "Record offer: tier " + offer + " (" + LABEL_NAMES_UI[offer] + ").";
-  const prompt = session.pendingSponsor !== null ? "sponsor" : session.pendingCharity ? "charity" : session.pendingBootleg ? "bootleg" : null;
-  $("promptRow").hidden = prompt === null;
-  if (prompt === "sponsor") $("promptText").textContent = "Sponsor offer: " + SPONSOR_NAMES_UI[session.pendingSponsor] + ".";
-  if (prompt === "charity") $("promptText").textContent = "A charity asks the band to play for free.";
-  if (prompt === "bootleg") $("promptText").textContent = "Bootleggers are copying the album.";
+  if (offer !== null) $("offerText").textContent = `Record offer: tier ${offer} (${LABEL_NAMES_UI[offer]}).`;
+
+  const p = prompt();
+  $("promptPanel").hidden = p === null;
+  if (p) {
+    $("promptText").textContent = p.text;
+    const row = $("promptButtons");
+    row.innerHTML = "";
+    p.buttons.forEach(([label, onClick, primary]) => {
+      const b = document.createElement("button");
+      b.textContent = label;
+      if (primary) b.className = "primary";
+      b.onclick = onClick;
+      row.appendChild(b);
+    });
+  }
+
   const over = session.over;
-  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn", "tour", "practice", "publicity", "promptYes", "promptNo"]) $(id).disabled = over;
+  const blocked = p !== null;
+  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "publicity", "gearBuy", "tour", "practice", "signBtn", "declineBtn"]) {
+    $(id).disabled = over || blocked;
+  }
+  $("nextNight").disabled = over || blocked || !session.touring;
+
   const log = $("log");
   log.innerHTML = "";
   session.log.slice(-200).reverse().forEach((line) => {
@@ -49,15 +120,13 @@ function render() {
   });
 }
 
-let data;
-
 function showHire() {
   const roster = $("roster");
   roster.innerHTML = "";
   const picked = new Set();
   const update = () => {
     $("startBand").disabled = picked.size < 1 || picked.size > 4;
-    $("hireCount").textContent = picked.size + " of 4 chosen";
+    $("hireCount").textContent = `${picked.size} of 4 chosen`;
   };
   data.roster.forEach((star, i) => {
     const row = document.createElement("label");
@@ -65,16 +134,20 @@ function showHire() {
     const box = document.createElement("input");
     box.type = "checkbox";
     box.onchange = () => {
-      if (box.checked && picked.size >= 4) { box.checked = false; return; }
-      box.checked ? picked.add(i) : picked.delete(i);
+      if (box.checked && picked.size >= 4) {
+        box.checked = false;
+        return;
+      }
+      if (box.checked) picked.add(i);
+      else picked.delete(i);
       update();
     };
     const wage = 10 * (1000 * star.stats[5] + 100 * star.stats[6] + 10 * star.stats[7] + star.stats[8]);
-    const label = document.createElement("span");
-    label.textContent = star.name;
+    const name = document.createElement("span");
+    name.textContent = star.name;
     const info = document.createElement("span");
-    info.textContent = "skill " + star.stats[2] + " · wage £" + wage + "/wk";
-    row.append(box, label, info);
+    info.textContent = `skill ${star.stats[2]} · wage £${wage}/wk`;
+    row.append(box, name, info);
     roster.appendChild(row);
   });
   update();
@@ -92,24 +165,24 @@ function wireGame() {
   fill($("studio"), STUDIOS.map((label, i) => [i, label]));
   fill($("video"), Object.entries(VIDEOS).map(([k, v]) => [k, v.label]));
   fill($("track"), Array.from({ length: 10 }, (_, i) => [i, `Track ${i + 1}`]));
-  $("day").onclick = () => { session.advanceDay(); $("msg").textContent = ""; render(); };
-  $("week").onclick = () => { session.advanceDays(7); $("msg").textContent = ""; render(); };
-  $("year").onclick = () => { session.advanceDays(30); $("msg").textContent = ""; render(); };
+  fill($("gear"), [[0, "New"], [1, "Second hand"], [2, "Dodgy"]]);
+  fill($("venue"), VENUE_NAMES_UI.map((label, i) => [i, label]));
+  fill($("price"), TICKET_PRICES_UI.map((p, i) => [i, `£${p}`]));
+
+  $("day").onclick = () => quiet(() => session.advanceDay());
+  $("week").onclick = () => quiet(() => session.advanceDays(7));
+  $("year").onclick = () => quiet(() => session.advanceDays(30));
   $("record").onclick = () => show(session.recordAlbum(Number($("studio").value), $("albumName").value || "Untitled"));
   $("single").onclick = () => show(session.releaseSingle(Number($("track").value), $("video").value));
   $("release").onclick = () => show(session.releaseAlbum());
   $("promo").onclick = () => show(session.promote());
-  fill($("gear"), [[0, "New"], [1, "Second hand"], [2, "Dodgy"]]);
-  $("gearBuy").onclick = () => show(session.buyGear(Number($("gear").value)));
-  fill($("venue"), VENUE_NAMES_UI.map((label, i) => [i, label]));
-  fill($("price"), TICKET_PRICES_UI.map((p, i) => [i, "£" + p]));
-  $("tour").onclick = () => show(session.tour(Number($("venue").value), Number($("price").value), 5));
-  $("practice").onclick = () => show(session.practice(3));
   $("publicity").onclick = () => show(session.publicity());
-  $("promptYes").onclick = () => show(session.pendingSponsor !== null ? session.answerSponsorOffer(true) : session.pendingCharity ? session.answerCharityOffer(true) : session.answerBootleg(1));
-  $("promptNo").onclick = () => show(session.pendingSponsor !== null ? session.answerSponsorOffer(false) : session.pendingCharity ? session.answerCharityOffer(false) : session.answerBootleg(0));
+  $("gearBuy").onclick = () => show(session.buyGear(Number($("gear").value)));
   $("signBtn").onclick = () => show(session.answerOffer(true));
   $("declineBtn").onclick = () => show(session.answerOffer(false));
+  $("tour").onclick = () => show(session.beginTour(Number($("venue").value), Number($("price").value), 5));
+  $("nextNight").onclick = () => show(session.playNight());
+  $("practice").onclick = () => show(session.practice(3));
 }
 
 async function start() {
@@ -118,4 +191,6 @@ async function start() {
   showHire();
 }
 
-start().catch((e) => { $("msg").textContent = `Could not start: ${e.message}`; });
+start().catch((e) => {
+  $("msg").textContent = `Could not start: ${e.message}`;
+});

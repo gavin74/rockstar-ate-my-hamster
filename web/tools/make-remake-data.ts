@@ -48,7 +48,8 @@ const data = {
   nameStrings,
   bandNames: Array.from({ length: 8 }, (_, i) => [{ t: "text", v: `The ${NOUN[i]}` }]),
   videoRankTable: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => n * 2),
-  fameRankTable: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+  // Starts at 0 so a band with no fame still ranks 10 (bottom of the top ten), not 11.
+  fameRankTable: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180],
   royaltyPercent: [255, 10, 20, 30, 40, 50],
   studioDays: [5, 4, 3, 2, 2, 1],
 };

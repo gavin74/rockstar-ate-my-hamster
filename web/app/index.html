@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rock Star Remake</title>
+<style>
+:root { --bg: #f7f5f0; --fg: #1d1b18; --muted: #6b665d; --accent: #b3261e; --panel: #ffffff; --line: #d9d4c7; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #161513; --fg: #ece9e1; --muted: #9b968a; --accent: #ff7a6e; --panel: #201e1b; --line: #3a362f; }
+}
+:root[data-theme="dark"] { --bg: #161513; --fg: #ece9e1; --muted: #9b968a; --accent: #ff7a6e; --panel: #201e1b; --line: #3a362f; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.4 system-ui, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 8px 0 12px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.stat b { display: block; font-size: 18px; }
+.stat span { color: var(--muted); font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
+button, select, input { font: inherit; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); }
+button { cursor: pointer; }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+#log { max-height: 280px; overflow-y: auto; font-size: 14px; }
+#log div { padding: 3px 0; border-bottom: 1px dotted var(--line); }
+.msg { min-height: 1.4em; color: var(--accent); }
+@media (max-width: 480px) { main { padding: 12px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Rock Star Remake</h1>
+  <div class="panel">
+    <div class="stats">
+      <div class="stat"><b id="date">-</b><span>Date</span></div>
+      <div class="stat"><b id="cash">-</b><span>Cash</span></div>
+      <div class="stat"><b id="wages">-</b><span>Weekly wages</span></div>
+      <div class="stat"><b id="hype">-</b><span>Hype</span></div>
+      <div class="stat"><b id="skill">-</b><span>Skill</span></div>
+      <div class="stat"><b id="fame">-</b><span>Fame</span></div>
+      <div class="stat"><b id="single">-</b><span>Single</span></div>
+      <div class="stat"><b id="album">-</b><span>Album</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <button id="day">Next day</button>
+      <button id="week">Next week</button>
+      <button id="year">Next 30 days</button>
+    </div>
+    <div class="row">
+      <label>Studio <select id="studio"></select></label>
+      <label>Album title <input id="albumName" value="Our First Album" size="18"></label>
+      <button id="record" class="primary">Record album</button>
+    </div>
+    <div class="row">
+      <label>Track <select id="track"></select></label>
+      <label>Video <select id="video"></select></label>
+      <button id="single">Release single</button>
+    </div>
+    <div class="row">
+      <button id="release">Release album</button>
+      <button id="promo">Promo push (£5k, +1 hype)</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div class="panel">
+    <b>Log</b>
+    <div id="log"></div>
+  </div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

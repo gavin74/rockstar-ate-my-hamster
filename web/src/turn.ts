@@ -4,9 +4,9 @@
 import { advanceDay, payWages, dateText } from "./calendar.ts";
 import { startNewCareerYear } from "./career.ts";
 import type { ModHost } from "./plugins.ts";
-import { type GameState, gameDecided } from "./state.ts";
+import { type DayOutcome, type GameState, gameDecided } from "./state.ts";
 
-export function stepDay(s: GameState, host: ModHost): void {
+export function stepDay(s: GameState, host: ModHost): DayOutcome {
   const before = gameDecided(s);
   const outcome = advanceDay(s);
   host.emit("dayAdvanced", { outcome, day: s.dayOfMonth, month: s.month, dayOfWeek: s.dayOfWeek }, s);
@@ -21,6 +21,7 @@ export function stepDay(s: GameState, host: ModHost): void {
     const reason = s.bankrupt ? "bankrupt" : s.stars === 0 ? "noStars" : s.discs[3] ? "platinum" : s.config.careerRetired ? "careerRetired" : "yearOver";
     host.emit("gameEnded", { reason }, s);
   }
+  return outcome;
 }
 
 export { dateText };

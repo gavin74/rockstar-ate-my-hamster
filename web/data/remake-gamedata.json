@@ -1,0 +1,1150 @@
+{
+ "_notice": "ORIGINAL remake data, invented for this project. Not taken from the original game.",
+ "rngTable": [
+  15,
+  15,
+  6,
+  11,
+  14,
+  4,
+  10,
+  9,
+  3,
+  12,
+  3,
+  7,
+  12,
+  0,
+  7,
+  1,
+  0,
+  5,
+  12,
+  9,
+  13,
+  12,
+  14,
+  7,
+  0,
+  13,
+  13,
+  5,
+  8,
+  2,
+  11,
+  4,
+  3,
+  8,
+  0,
+  1,
+  9,
+  3,
+  10,
+  9,
+  11,
+  2,
+  14,
+  1,
+  10,
+  8,
+  4,
+  8,
+  10,
+  15,
+  5,
+  2,
+  7,
+  5,
+  4,
+  15,
+  1,
+  14,
+  6,
+  6,
+  6,
+  11,
+  2,
+  13
+ ],
+ "rivals": [
+  {
+   "single": [
+    4,
+    33,
+    36,
+    4,
+    5
+   ],
+   "album": [
+    3,
+    34,
+    29,
+    7,
+    9
+   ],
+   "songChoices": [
+    0,
+    3
+   ],
+   "albumTitle": 30
+  },
+  {
+   "single": [
+    2,
+    28,
+    33,
+    5,
+    4
+   ],
+   "album": [
+    3,
+    21,
+    39,
+    6,
+    8
+   ],
+   "songChoices": [
+    1,
+    10
+   ],
+   "albumTitle": 31
+  },
+  {
+   "single": [
+    4,
+    25,
+    33,
+    5,
+    7
+   ],
+   "album": [
+    0,
+    23,
+    30,
+    5,
+    9
+   ],
+   "songChoices": [
+    2,
+    17
+   ],
+   "albumTitle": 32
+  },
+  {
+   "single": [
+    3,
+    39,
+    40,
+    3,
+    4
+   ],
+   "album": [
+    2,
+    19,
+    33,
+    5,
+    8
+   ],
+   "songChoices": [
+    3,
+    24
+   ],
+   "albumTitle": 33
+  },
+  {
+   "single": [
+    0,
+    27,
+    44,
+    6,
+    5
+   ],
+   "album": [
+    1,
+    19,
+    36,
+    7,
+    9
+   ],
+   "songChoices": [
+    4,
+    31
+   ],
+   "albumTitle": 34
+  },
+  {
+   "single": [
+    1,
+    37,
+    37,
+    4,
+    7
+   ],
+   "album": [
+    1,
+    31,
+    37,
+    5,
+    9
+   ],
+   "songChoices": [
+    5,
+    38
+   ],
+   "albumTitle": 35
+  },
+  {
+   "single": [
+    2,
+    26,
+    40,
+    6,
+    4
+   ],
+   "album": [
+    3,
+    19,
+    37,
+    8,
+    9
+   ],
+   "songChoices": [
+    6,
+    45
+   ],
+   "albumTitle": 36
+  },
+  {
+   "single": [
+    6,
+    31,
+    34,
+    5,
+    5
+   ],
+   "album": [
+    1,
+    16,
+    30,
+    5,
+    9
+   ],
+   "songChoices": [
+    7,
+    52
+   ],
+   "albumTitle": 37
+  },
+  {
+   "single": [
+    6,
+    34,
+    32,
+    5,
+    4
+   ],
+   "album": [
+    4,
+    30,
+    33,
+    5,
+    9
+   ],
+   "songChoices": [
+    8,
+    1
+   ],
+   "albumTitle": 38
+  },
+  {
+   "single": [
+    0,
+    33,
+    33,
+    5,
+    4
+   ],
+   "album": [
+    2,
+    16,
+    33,
+    8,
+    7
+   ],
+   "songChoices": [
+    9,
+    8
+   ],
+   "albumTitle": 39
+  },
+  {
+   "single": [
+    2,
+    25,
+    44,
+    3,
+    7
+   ],
+   "album": [
+    2,
+    30,
+    31,
+    6,
+    7
+   ],
+   "songChoices": [
+    10,
+    15
+   ],
+   "albumTitle": 40
+  },
+  {
+   "single": [
+    0,
+    28,
+    31,
+    6,
+    6
+   ],
+   "album": [
+    1,
+    21,
+    35,
+    5,
+    6
+   ],
+   "songChoices": [
+    11,
+    22
+   ],
+   "albumTitle": 41
+  },
+  {
+   "single": [
+    0,
+    36,
+    40,
+    3,
+    7
+   ],
+   "album": [
+    1,
+    32,
+    29,
+    8,
+    9
+   ],
+   "songChoices": [
+    12,
+    29
+   ],
+   "albumTitle": 42
+  },
+  {
+   "single": [
+    5,
+    37,
+    44,
+    6,
+    5
+   ],
+   "album": [
+    2,
+    21,
+    39,
+    6,
+    6
+   ],
+   "songChoices": [
+    13,
+    36
+   ],
+   "albumTitle": 43
+  },
+  {
+   "single": [
+    2,
+    38,
+    30,
+    3,
+    5
+   ],
+   "album": [
+    0,
+    20,
+    25,
+    6,
+    6
+   ],
+   "songChoices": [
+    14,
+    43
+   ],
+   "albumTitle": 44
+  },
+  {
+   "single": [
+    5,
+    35,
+    31,
+    6,
+    7
+   ],
+   "album": [
+    3,
+    31,
+    33,
+    8,
+    7
+   ],
+   "songChoices": [
+    15,
+    50
+   ],
+   "albumTitle": 45
+  },
+  {
+   "single": [
+    3,
+    30,
+    40,
+    3,
+    7
+   ],
+   "album": [
+    1,
+    33,
+    27,
+    6,
+    6
+   ],
+   "songChoices": [
+    16,
+    57
+   ],
+   "albumTitle": 46
+  },
+  {
+   "single": [
+    2,
+    34,
+    38,
+    6,
+    7
+   ],
+   "album": [
+    3,
+    22,
+    32,
+    6,
+    6
+   ],
+   "songChoices": [
+    17,
+    6
+   ],
+   "albumTitle": 47
+  },
+  {
+   "single": [
+    6,
+    28,
+    36,
+    5,
+    6
+   ],
+   "album": [
+    1,
+    31,
+    33,
+    5,
+    7
+   ],
+   "songChoices": [
+    18,
+    13
+   ],
+   "albumTitle": 48
+  },
+  {
+   "single": [
+    0,
+    27,
+    43,
+    3,
+    6
+   ],
+   "album": [
+    2,
+    27,
+    34,
+    6,
+    9
+   ],
+   "songChoices": [
+    19,
+    20
+   ],
+   "albumTitle": 49
+  },
+  {
+   "single": [
+    1,
+    38,
+    30,
+    6,
+    7
+   ],
+   "album": [
+    2,
+    17,
+    37,
+    6,
+    6
+   ],
+   "songChoices": [
+    20,
+    27
+   ],
+   "albumTitle": 50
+  },
+  {
+   "single": [
+    0,
+    33,
+    39,
+    3,
+    5
+   ],
+   "album": [
+    3,
+    34,
+    35,
+    7,
+    8
+   ],
+   "songChoices": [
+    21,
+    34
+   ],
+   "albumTitle": 51
+  },
+  {
+   "single": [
+    4,
+    30,
+    32,
+    3,
+    6
+   ],
+   "album": [
+    0,
+    33,
+    33,
+    5,
+    8
+   ],
+   "songChoices": [
+    22,
+    41
+   ],
+   "albumTitle": 52
+  },
+  {
+   "single": [
+    5,
+    33,
+    31,
+    4,
+    6
+   ],
+   "album": [
+    4,
+    31,
+    33,
+    8,
+    8
+   ],
+   "songChoices": [
+    23,
+    48
+   ],
+   "albumTitle": 53
+  },
+  {
+   "single": [
+    2,
+    29,
+    33,
+    3,
+    7
+   ],
+   "album": [
+    3,
+    32,
+    28,
+    7,
+    9
+   ],
+   "songChoices": [
+    24,
+    55
+   ],
+   "albumTitle": 54
+  },
+  {
+   "single": [
+    6,
+    21,
+    31,
+    5,
+    4
+   ],
+   "album": [
+    3,
+    17,
+    28,
+    7,
+    8
+   ],
+   "songChoices": [
+    25,
+    4
+   ],
+   "albumTitle": 55
+  },
+  {
+   "single": [
+    5,
+    38,
+    38,
+    3,
+    7
+   ],
+   "album": [
+    0,
+    23,
+    34,
+    6,
+    9
+   ],
+   "songChoices": [
+    26,
+    11
+   ],
+   "albumTitle": 56
+  },
+  {
+   "single": [
+    1,
+    38,
+    34,
+    6,
+    4
+   ],
+   "album": [
+    4,
+    17,
+    38,
+    6,
+    9
+   ],
+   "songChoices": [
+    27,
+    18
+   ],
+   "albumTitle": 57
+  },
+  {
+   "single": [
+    0,
+    30,
+    39,
+    4,
+    6
+   ],
+   "album": [
+    2,
+    30,
+    36,
+    8,
+    7
+   ],
+   "songChoices": [
+    28,
+    25
+   ],
+   "albumTitle": 30
+  },
+  {
+   "single": [
+    1,
+    25,
+    41,
+    6,
+    7
+   ],
+   "album": [
+    3,
+    23,
+    39,
+    5,
+    7
+   ],
+   "songChoices": [
+    29,
+    32
+   ],
+   "albumTitle": 31
+  }
+ ],
+ "respawnScores": [
+  25,
+  45,
+  33,
+  21,
+  19,
+  36
+ ],
+ "respawnStart": 3,
+ "nameStrings": [
+  [
+   {
+    "t": "text",
+    "v": "Velvet Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Midnight Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Paper Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Velvet Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Midnight Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Paper Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Velvet Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Midnight Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Paper Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Velvet Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Midnight Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Paper Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Velvet Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Midnight Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Paper Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Velvet Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Chrome Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Neon Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Static Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Hollow Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Crimson Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Electric Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "Silver Vultures"
+   }
+  ]
+ ],
+ "bandNames": [
+  [
+   {
+    "t": "text",
+    "v": "The Engines"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Parade"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Mirrors"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Thunder"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Saints"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Vultures"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Lanterns"
+   }
+  ],
+  [
+   {
+    "t": "text",
+    "v": "The Circuits"
+   }
+  ]
+ ],
+ "videoRankTable": [
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20
+ ],
+ "fameRankTable": [
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90,
+  100
+ ],
+ "royaltyPercent": [
+  255,
+  10,
+  20,
+  30,
+  40,
+  50
+ ],
+ "studioDays": [
+  5,
+  4,
+  3,
+  2,
+  2,
+  1
+ ]
+}

@@ -1,5 +1,5 @@
 // Browser shell for the playable slice. Uses the built modules in dist/.
-import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI, VENUE_NAMES_UI, TICKET_PRICES_UI } from "./session.js";
+import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI, VENUE_NAMES_UI, TICKET_PRICES_UI, SPONSOR_NAMES_UI } from "./session.js";
 
 const $ = (id) => document.getElementById(id);
 let session;
@@ -33,8 +33,13 @@ function render() {
   const offer = session.pendingOffer;
   $("offerRow").hidden = offer === null;
   if (offer !== null) $("offerText").textContent = "Record offer: tier " + offer + " (" + LABEL_NAMES_UI[offer] + ").";
+  const prompt = session.pendingSponsor !== null ? "sponsor" : session.pendingCharity ? "charity" : session.pendingBootleg ? "bootleg" : null;
+  $("promptRow").hidden = prompt === null;
+  if (prompt === "sponsor") $("promptText").textContent = "Sponsor offer: " + SPONSOR_NAMES_UI[session.pendingSponsor] + ".";
+  if (prompt === "charity") $("promptText").textContent = "A charity asks the band to play for free.";
+  if (prompt === "bootleg") $("promptText").textContent = "Bootleggers are copying the album.";
   const over = session.over;
-  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn", "tour", "practice"]) $(id).disabled = over;
+  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn", "tour", "practice", "publicity", "promptYes", "promptNo"]) $(id).disabled = over;
   const log = $("log");
   log.innerHTML = "";
   session.log.slice(-200).reverse().forEach((line) => {
@@ -100,6 +105,9 @@ function wireGame() {
   fill($("price"), TICKET_PRICES_UI.map((p, i) => [i, "£" + p]));
   $("tour").onclick = () => show(session.tour(Number($("venue").value), Number($("price").value), 5));
   $("practice").onclick = () => show(session.practice(3));
+  $("publicity").onclick = () => show(session.publicity());
+  $("promptYes").onclick = () => show(session.pendingSponsor !== null ? session.answerSponsorOffer(true) : session.pendingCharity ? session.answerCharityOffer(true) : session.answerBootleg(1));
+  $("promptNo").onclick = () => show(session.pendingSponsor !== null ? session.answerSponsorOffer(false) : session.pendingCharity ? session.answerCharityOffer(false) : session.answerBootleg(0));
   $("signBtn").onclick = () => show(session.answerOffer(true));
   $("declineBtn").onclick = () => show(session.answerOffer(false));
 }

@@ -105,8 +105,20 @@ export interface GameState {
   oneShot: number;
   /** $BEB3 "first night of the tour" */
   firstNight: boolean;
-  /** $BEBB sponsor 0 none, 1...5 (sponsor rules not ported yet) */
+  /** $BF0B mood per slot, 0...255 */
+  mood: number[];
+  /** $6B20 turn counter (not reset by a new game) */
+  eventCounter: number;
+  /** $BEBB sponsor 0 none, 1...5 */
   sponsor: number;
+  /** $BEC7...$BECB */
+  sponsorOffered: boolean[];
+  /** $BECC */
+  sponsorPatience: number;
+  /** $BECE */
+  scandalCounter: number;
+  /** $BEBF */
+  lastHeadline: number;
 
   // recording
   /** $BED4 */
@@ -202,7 +214,13 @@ export function newGame(rng: SpectrumRNG, catalog: Catalog, config: Partial<Game
     label: 0,
     oneShot: 0,
     firstNight: false,
+    mood: [0, 0, 0, 0],
+    eventCounter: 10,
     sponsor: 0,
+    sponsorOffered: [false, false, false, false, false],
+    sponsorPatience: 0,
+    scandalCounter: 20,
+    lastHeadline: 0,
     albumInCan: false,
     albumReleased: false,
     singleReleased: false,

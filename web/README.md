@@ -16,8 +16,9 @@ hook API and a small playable slice in the browser.
 | Hiring from a star roster | `Rules+Core.swift` §4.1, `StarCreator.swift` | hire screen done, 20 invented stars in `data/remake-gamedata.json` |
 | Recording, releases, rival and player charts, royalties and discs | `Rules+Records.swift` | done, `src/records.ts` (name text via `catalog.titleFor`) |
 | Gigs, tours, practice, disasters | `Rules+Events.swift` (practice, disasters, gigs) | done, `src/gigs.ts` |
-| Mood checks, demands, ultimatums, trouble | `Rules+Events.swift` §mood | not ported |
-| Headlines, sponsors, scandals, charity, bootlegs | `Rules+Events.swift`, `NewEvents.swift` | not ported |
+| Mood checks, demands, ultimatums, trouble, gifts | `Rules+Events.swift` | done, `src/events.ts`; auto-answered on tour |
+| Publicity, headlines, sponsors, scandals, charity, bootlegs | `Rules+Events.swift` | done, `src/events.ts`; headline text not ported |
+| Event scheduling (per Sunday) | `$6ADF` | done, `Session.periodicEvents` |
 | Text expansion (message and name strings) | `GameData.swift` `expand` | not ported; `titleFor` is injected |
 | Game data loader (`gamedata.json`) | `GameData.swift` | shape check done, `src/data.ts`, `src/node.ts` |
 | Remake data (original, invented) | none | `data/remake-gamedata.json`, `tools/make-remake-data.ts` |
@@ -30,7 +31,10 @@ Known gaps in the port:
 - Rival title text comes from `catalog.titleFor`. The Swift `expand` also resolves random word groups, which is part of the text port.
 - `newGame` does not run the boot step. Call `bootCharts(state)` once after it, as the Swift init does.
 - The remake roster is invented and untuned. Some hires will not reach the contract thresholds (skill 60, fame 40).
-- The slice's remaining shortcut is easy money by default. Mood checks, headlines, sponsors and scandals are not ported.
+- The slice's remaining shortcut is easy money by default.
+- Demands and ultimatums on tour are paid when affordable and refused otherwise. A player choice is not offered yet.
+- Bootleg prompts only offer "sue" (1) and "ignore" (0). The raid and pay-off options exist in `answerBootleg` but have no buttons.
+- Headline and message text is not ported. The log shows the outcome in plain words.
 - After equipment is lost, re-buying kit (msg 116) is not ported. The loss is logged only.
 - Faithful bugs ported so far: the wage bill's slot choice (`wageBill`), the producer ransom's 10^6 digit test (`producerRansomDue`), and the chart quirk that lands a 0 gap one place down (`movePlayerSingle`).
 

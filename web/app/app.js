@@ -82,8 +82,8 @@ function render() {
   $("hype").textContent = s.hype;
   $("skill").textContent = s.skill;
   $("fame").textContent = s.fame;
-  $("single").textContent = s.singleReleased ? pos(s.singlePos) : "-";
-  $("album").textContent = s.albumReleased ? pos(s.albumPos) : s.albumInCan ? "in can" : "-";
+  $("singlePos").textContent = s.singleReleased ? pos(s.singlePos) : "-";
+  $("albumPos").textContent = s.albumReleased ? pos(s.albumPos) : s.albumInCan ? "in can" : "-";
 
   const offer = session.pendingOffer;
   $("offerRow").hidden = offer === null;
@@ -110,6 +110,12 @@ function render() {
     $(id).disabled = over || blocked;
   }
   $("nextNight").disabled = over || blocked || !session.touring;
+  // Enable release buttons only when there is something to release, so a click always does something.
+  const hasTracks = s.trackNames.some((n) => n !== "");
+  $("single").disabled = over || blocked || !hasTracks;
+  $("release").disabled = over || blocked || !s.albumInCan || s.albumReleased;
+  $("single").title = hasTracks ? "" : "Record an album first";
+  $("release").title = s.albumInCan ? "" : "Record an album first";
 
   const log = $("log");
   log.innerHTML = "";
@@ -164,6 +170,7 @@ function showHire() {
 function wireGame() {
   fill($("studio"), STUDIOS.map((label, i) => [i, label]));
   fill($("video"), Object.entries(VIDEOS).map(([k, v]) => [k, v.label]));
+  $("video").value = "budget";
   fill($("track"), Array.from({ length: 10 }, (_, i) => [i, `Track ${i + 1}`]));
   fill($("gear"), [[0, "New"], [1, "Second hand"], [2, "Dodgy"]]);
   fill($("venue"), VENUE_NAMES_UI.map((label, i) => [i, label]));

@@ -25,12 +25,22 @@ button:disabled { opacity: .5; cursor: default; }
 #log { max-height: 280px; overflow-y: auto; font-size: 14px; }
 #log div { padding: 3px 0; border-bottom: 1px dotted var(--line); }
 .msg { min-height: 1.4em; color: var(--accent); }
+.muted { color: var(--muted); }
+.star { display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px dotted var(--line); }
+.star span { color: var(--muted); font-size: 13px; margin-left: auto; }
 @media (max-width: 480px) { main { padding: 12px; } }
 </style>
 </head>
 <body>
 <main>
   <h1>Rock Star Remake</h1>
+  <div class="panel" id="hire">
+    <b>Hire your band</b>
+    <p class="muted">Pick one to four stars. Skill and fame come from the band you hire.</p>
+    <div id="roster"></div>
+    <div class="row"><span id="hireCount"></span><button id="startBand" class="primary" disabled>Start the band</button></div>
+  </div>
+  <div id="game" hidden>
   <div class="panel">
     <div class="stats">
       <div class="stat"><b id="date">-</b><span>Date</span></div>
@@ -77,6 +87,7 @@ button:disabled { opacity: .5; cursor: default; }
   <div class="panel">
     <b>Log</b>
     <div id="log"></div>
+  </div>
   </div>
 </main>
 <script type="module" src="app.js"></script>

@@ -13,7 +13,7 @@ hook API and a small playable slice in the browser.
 | Career year roll-over | `Career.swift` | done, `src/career.ts` |
 | Mod hook host | none | `src/plugins.ts`, `src/turn.ts` |
 | Band formation, equipment, record contracts | `Rules+Core.swift` §2 (formBand), §7.2, §8.1 | done, `src/band.ts` |
-| Hiring from a star roster | `Rules+Core.swift` §4.1, `StarCreator.swift` | not ported (slice uses four invented stars) |
+| Hiring from a star roster | `Rules+Core.swift` §4.1, `StarCreator.swift` | hire screen done, 20 invented stars in `data/remake-gamedata.json` |
 | Recording, releases, rival and player charts, royalties and discs | `Rules+Records.swift` | done, `src/records.ts` (name text via `catalog.titleFor`) |
 | Random events, sponsors, scandals | `Rules+Events.swift`, `NewEvents.swift` | not ported |
 | Text expansion (message and name strings) | `GameData.swift` `expand` | not ported; `titleFor` is injected |
@@ -27,7 +27,8 @@ Known gaps in the port:
 - Money caps at 99,999,999 instead of wrapping on carry, following the Swift code and the notes it cites (`INFERRED` there).
 - Rival title text comes from `catalog.titleFor`. The Swift `expand` also resolves random word groups, which is part of the text port.
 - `newGame` does not run the boot step. Call `bootCharts(state)` once after it, as the Swift init does.
-- The slice's shortcuts are listed under "Play it". They go once the star roster and events are ported.
+- The remake roster is invented and untuned. Some hires will not reach the contract thresholds (skill 60, fame 40).
+- The slice's remaining shortcut is easy money by default. Events are not ported.
 - Faithful bugs ported so far: the wage bill's slot choice (`wageBill`), the producer ransom's 10^6 digit test (`producerRansomDue`), and the chart quirk that lands a 0 gap one place down (`movePlayerSingle`).
 
 ## Play it
@@ -37,6 +38,7 @@ Known gaps in the port:
     python3 -m http.server -d dist  # then open http://localhost:8000
 
 The slice is one band of four stars with fixed wages, on easy money (£100k). Actions:
+- **Hire**: pick one to four stars on the start screen. Their stats set the band's skill and fame.
 - **Record album**: pick a studio. Days pass for each track.
 - **Promo push** (£5k, +1 hype): a remake lever, not in the original. Hype speeds chart climbs.
 - **Buy kit**: new, second hand or dodgy, priced by the instruments the stars play.
@@ -45,7 +47,7 @@ The slice is one band of four stars with fixed wages, on easy money (£100k). Ac
 - **Record offer**: after the first Sunday the label offers a contract. Sign to take the advance, or decline.
 - Time: next day, next week, next 30 days. Wages on Friday, chart show and royalties on Sunday.
 
-Slice shortcuts, all marked in code: the four stars are invented and fixed, money is easy, and there are no events or star roster yet. The record offer and equipment are real rules, not shortcuts.
+The band is hired from a roster of 20 invented stars, one to four at a time. Money is easy by default (£100k), and there are no events yet. The record offer and equipment are real rules.
 
 ## Run the tests and the demo
 

@@ -41,6 +41,8 @@ export const LABEL_NAMES_UI = LABEL_NAMES;
 
 export const STUDIOS = ["Garage (£2k)", "Small studio (£5k)", "Studio (£10k)", "Big studio (£16k)", "Pro studio (£20k)", "Top studio (£50k)"];
 
+export type RosterStar = StarStats;
+
 export class Session {
   readonly state: GameState;
   readonly host: ModHost;
@@ -51,7 +53,7 @@ export class Session {
   /** A record offer waiting for an answer (tier 1...5). */
   pendingOffer: number | null = null;
 
-  constructor(data: GameData, opts: { seed?: bigint; config?: Partial<GameConfig>; mods?: Mod[] } = {}) {
+  constructor(data: GameData, opts: { seed?: bigint; config?: Partial<GameConfig>; mods?: Mod[]; band?: StarStats[] } = {}) {
     const titleFor = (ref: number) => {
       const part = data.nameStrings[ref] as Array<{ t: string; v: string }> | undefined;
       return part?.[0]?.t === "text" ? part[0].v : "";
@@ -59,9 +61,11 @@ export class Session {
     const catalog = catalogFrom(data, titleFor);
     // Slice default: easy money (£100k), until the band hiring and contracts are ported.
     this.state = newGame(new SpectrumRNG(data.rngTable, opts.seed ?? 1n), catalog, { difficulty: "easy", ...opts.config });
-    // Slice band: the invented roster above, hired and formed as in the original.
-    this.state.hiredCount = SLICE_BAND.length;
-    SLICE_BAND.forEach((star, slot) => acceptStar(this.state, star, slot));
+    // The band is hired from the roster (1 to 4 stars) and formed as in the original.
+    const band = opts.band ?? SLICE_BAND;
+    if (band.length < 1 || band.length > 4) throw new Error("a band has 1 to 4 stars");
+    this.state.hiredCount = band.length;
+    band.forEach((star, slot) => acceptStar(this.state, star, slot));
     formBand(this.state);
     R.bootCharts(this.state);
     this.host = new ModHost([

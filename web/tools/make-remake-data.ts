@@ -39,6 +39,20 @@ const rivals = Array.from({ length: 30 }, (_, i) => ({
   albumTitle: 30 + (i % 28),
 }));
 
+// 20 invented stars for the hire screen. stats: [portrait, voice, ability, mood,
+// instrument kind, wage digits x4]. Wage = 10 * (1000*d5 + 100*d6 + 10*d7 + d8).
+const FIRST = ["Dana", "Sol", "Ines", "Tom", "Ada", "Milo", "Ruth", "Kit", "Vera", "Jonah", "Lena", "Otis", "Mae", "Ezra", "Nell", "Rafa", "Cass", "Theo", "Ivy", "Bram"];
+const LAST = ["Vox", "Reed", "Kade", "Brisk", "Lune", "Marsh", "Quill", "Strand", "Pike", "Orr", "Finch", "Dune", "Cole", "Ash", "Vale", "Hart", "Sable", "Rook", "Wren", "Stone"];
+const roster = FIRST.map((first, i) => {
+  const ability = 35 + int(40);
+  const portrait = 15 + int(40);
+  const wageUnits = 1 + int(9); // 10...90 pounds per unit of 10
+  return {
+    name: `${first} ${LAST[i]}`,
+    stats: [portrait, i % 8, ability, 40 + int(40), [0x20 | 2, 0x40 | 1, 0x80 | 2, 1, 0x20 | 1][i % 5], 0, 0, Math.floor(wageUnits / 10), wageUnits % 10],
+  };
+});
+
 const data = {
   _notice: "ORIGINAL remake data, invented for this project. Not taken from the original game.",
   rngTable,
@@ -52,6 +66,7 @@ const data = {
   fameRankTable: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180],
   royaltyPercent: [255, 10, 20, 30, 40, 50],
   studioDays: [5, 4, 3, 2, 2, 1],
+  roster,
 };
 
 writeFileSync(out, JSON.stringify(data, null, 1) + "\n");

@@ -44,10 +44,46 @@ function render() {
   });
 }
 
-async function start() {
-  const res = await fetch("remake-gamedata.json");
-  const data = await res.json();
-  session = new Session(data, { seed: BigInt(Date.now()) });
+let data;
+
+function showHire() {
+  const roster = $("roster");
+  roster.innerHTML = "";
+  const picked = new Set();
+  const update = () => {
+    $("startBand").disabled = picked.size < 1 || picked.size > 4;
+    $("hireCount").textContent = picked.size + " of 4 chosen";
+  };
+  data.roster.forEach((star, i) => {
+    const row = document.createElement("label");
+    row.className = "star";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.onchange = () => {
+      if (box.checked && picked.size >= 4) { box.checked = false; return; }
+      box.checked ? picked.add(i) : picked.delete(i);
+      update();
+    };
+    const wage = 10 * (1000 * star.stats[5] + 100 * star.stats[6] + 10 * star.stats[7] + star.stats[8]);
+    const label = document.createElement("span");
+    label.textContent = star.name;
+    const info = document.createElement("span");
+    info.textContent = "skill " + star.stats[2] + " · wage £" + wage + "/wk";
+    row.append(box, label, info);
+    roster.appendChild(row);
+  });
+  update();
+  $("startBand").onclick = () => {
+    const band = [...picked].map((i) => data.roster[i]);
+    session = new Session(data, { seed: BigInt(Date.now()), band });
+    $("hire").hidden = true;
+    $("game").hidden = false;
+    wireGame();
+    render();
+  };
+}
+
+function wireGame() {
   fill($("studio"), STUDIOS.map((label, i) => [i, label]));
   fill($("video"), Object.entries(VIDEOS).map(([k, v]) => [k, v.label]));
   fill($("track"), Array.from({ length: 10 }, (_, i) => [i, `Track ${i + 1}`]));
@@ -62,7 +98,12 @@ async function start() {
   $("gearBuy").onclick = () => show(session.buyGear(Number($("gear").value)));
   $("signBtn").onclick = () => show(session.answerOffer(true));
   $("declineBtn").onclick = () => show(session.answerOffer(false));
-  render();
+}
+
+async function start() {
+  const res = await fetch("remake-gamedata.json");
+  data = await res.json();
+  showHire();
 }
 
 start().catch((e) => { $("msg").textContent = `Could not start: ${e.message}`; });

@@ -49,3 +49,14 @@ test("answering with no offer is refused", () => {
   answerContract(session.state, false);
   assert.equal(session.state.label, 0);
 });
+
+test("a chosen band forms from the roster, with the fame bonus for its size", () => {
+  const roster = data.roster;
+  const one = new Session(data, { seed: 1n, band: [roster[0]] }).state;
+  assert.equal(one.stars, 1);
+  assert.equal(one.bandName, roster[0].name);
+  const four = new Session(data, { seed: 1n, band: roster.slice(0, 4) }).state;
+  assert.equal(four.stars, 4);
+  assert.ok(four.wages.slice(0, 4).every((w) => w >= 10));
+  assert.throws(() => new Session(data, { seed: 1n, band: [] }), /1 to 4 stars/);
+});

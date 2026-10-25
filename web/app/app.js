@@ -1,5 +1,5 @@
 // Browser shell for the playable slice. Uses the built modules in dist/.
-import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI } from "./session.js";
+import { Session, STUDIOS, VIDEOS, LABEL_NAMES_UI, VENUE_NAMES_UI, TICKET_PRICES_UI } from "./session.js";
 
 const $ = (id) => document.getElementById(id);
 let session;
@@ -34,7 +34,7 @@ function render() {
   $("offerRow").hidden = offer === null;
   if (offer !== null) $("offerText").textContent = "Record offer: tier " + offer + " (" + LABEL_NAMES_UI[offer] + ").";
   const over = session.over;
-  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn"]) $(id).disabled = over;
+  for (const id of ["day", "week", "year", "record", "single", "release", "promo", "gearBuy", "signBtn", "declineBtn", "tour", "practice"]) $(id).disabled = over;
   const log = $("log");
   log.innerHTML = "";
   session.log.slice(-200).reverse().forEach((line) => {
@@ -96,6 +96,10 @@ function wireGame() {
   $("promo").onclick = () => show(session.promote());
   fill($("gear"), [[0, "New"], [1, "Second hand"], [2, "Dodgy"]]);
   $("gearBuy").onclick = () => show(session.buyGear(Number($("gear").value)));
+  fill($("venue"), VENUE_NAMES_UI.map((label, i) => [i, label]));
+  fill($("price"), TICKET_PRICES_UI.map((p, i) => [i, "£" + p]));
+  $("tour").onclick = () => show(session.tour(Number($("venue").value), Number($("price").value), 5));
+  $("practice").onclick = () => show(session.practice(3));
   $("signBtn").onclick = () => show(session.answerOffer(true));
   $("declineBtn").onclick = () => show(session.answerOffer(false));
 }

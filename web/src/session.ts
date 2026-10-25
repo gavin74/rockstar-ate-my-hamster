@@ -12,6 +12,7 @@ import { catalogFrom, gameDecided, newGame, type GameState } from "./state.ts";
 import { LABEL_NAMES } from "./band.ts";
 import { stepDay } from "./turn.ts";
 import { acceptStar, answerContract, buyEquipment, contractOffer, formBand, gearCosts, type StarStats } from "./band.ts";
+import { VENUE_NAMES, TICKET_PRICES, startPractice, practiceDay, startTour, playGig, disasterCheck, type Disaster } from "./gigs.ts";
 
 export type Result = { ok: true; message: string } | { ok: false; message: string };
 
@@ -38,6 +39,8 @@ export const SLICE_BAND: StarStats[] = [
 ];
 
 export const LABEL_NAMES_UI = LABEL_NAMES;
+export const VENUE_NAMES_UI = VENUE_NAMES;
+export const TICKET_PRICES_UI = TICKET_PRICES;
 
 export const STUDIOS = ["Garage (£2k)", "Small studio (£5k)", "Studio (£10k)", "Big studio (£16k)", "Pro studio (£20k)", "Top studio (£50k)"];
 
@@ -206,6 +209,39 @@ export class Session {
     buyEquipment(this.state, quality);
     this.note(`Bought equipment for £${cost}.`);
     return { ok: true, message: `Equipment bought for £${cost}.` };
+  }
+
+  /** Practise for `days` days (£100 a day). Each day raises skill and lowers hype. */
+  practice(days: number): Result {
+    const s = this.state;
+    if (this.over) return fail("The game is over.");
+    if (!startPractice(s, days)) return fail("The band cannot pay for practice.");
+    for (let i = 0; i < days; i++) practiceDay(s);
+    this.note(`Practised for ${days} days.`);
+    this.advanceDays(days);
+    return { ok: true, message: `Practised for ${days} days.` };
+  }
+
+  /** Tour: pay the venue for `nights`, then play one show a night. Disasters are checked before each show. */
+  tour(venue: number, price: number, nights: number): Result {
+    const s = this.state;
+    if (this.over) return fail("The game is over.");
+    if (!startTour(s, venue, nights)) return fail("The band cannot pay the venue hire.");
+    this.note(`Touring: ${VENUE_NAMES[venue]}, tickets £${TICKET_PRICES[price]}, ${nights} nights.`);
+    for (let night = 1; night <= nights && !this.over; night++) {
+      const disaster = disasterCheck(s);
+      if (disaster) this.reportDisaster(disaster);
+      const r = playGig(s, venue, price);
+      this.note(`Night ${night}: ${r.tickets} sold, £${r.takings} taken. Cash £${s.cash}.`);
+      this.advanceDay();
+    }
+    return { ok: true, message: "Tour finished." };
+  }
+
+  private reportDisaster(d: Disaster) {
+    if (d.kind === "sued") this.note("The band was sued. £1,000,000 paid.");
+    else if (d.kind === "taxman") this.note("The taxman called. £1,000,000 paid.");
+    else this.note("Equipment lost. Buy kit again (re-buying is not ported yet).");
   }
 
   /** Charge a fee outside the rules (for the cheat menu and tests). */

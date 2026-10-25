@@ -103,6 +103,10 @@ export interface GameState {
   label: number;
   /** $BEC0-ish one-shot bits: b0 sued, b1 taxman, b2 equipment, b3 producer ransom */
   oneShot: number;
+  /** $BEB3 "first night of the tour" */
+  firstNight: boolean;
+  /** $BEBB sponsor 0 none, 1...5 (sponsor rules not ported yet) */
+  sponsor: number;
 
   // recording
   /** $BED4 */
@@ -197,6 +201,8 @@ export function newGame(rng: SpectrumRNG, catalog: Catalog, config: Partial<Game
     hype: 0,
     label: 0,
     oneShot: 0,
+    firstNight: false,
+    sponsor: 0,
     albumInCan: false,
     albumReleased: false,
     singleReleased: false,

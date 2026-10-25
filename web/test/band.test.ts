@@ -60,3 +60,48 @@ test("a chosen band forms from the roster, with the fame bonus for its size", ()
   assert.ok(four.wages.slice(0, 4).every((w) => w >= 10));
   assert.throws(() => new Session(data, { seed: 1n, band: [] }), /1 to 4 stars/);
 });
+
+import { startPractice, practiceDay, ticketSales, startTour, playGig, disasterCheck, VENUE_SEATS } from "../src/gigs.ts";
+
+test("ticket sales cap at the venue's seats", () => {
+  assert.deepEqual(ticketSales(10, 0, 0), { tickets: Math.min(10 * 10 * 9, VENUE_SEATS[0]), takings: Math.min(900, 200) * 2 });
+  assert.equal(ticketSales(1000, 4, 0).tickets, VENUE_SEATS[4]);
+});
+
+test("a tour charges venue hire per night; a gig credits takings and moves fame and skill", () => {
+  const session = new Session(data, { seed: 9n });
+  const s = session.state;
+  const cash = s.cash;
+  assert.equal(startTour(s, 1, 3), true);
+  assert.equal(s.cash, cash - 3000);
+  const before = { fame: s.fame, skill: s.skill, cash: s.cash };
+  const r = playGig(s, 1, 1);
+  assert.ok(r.takings >= 0);
+  assert.equal(s.cash, before.cash + r.takings);
+  assert.equal(s.skill, Math.min(before.skill + 10, 255));
+});
+
+test("practice costs £100 a day and raises skill", () => {
+  const s = new Session(data, { seed: 10n }).state;
+  const cash = s.cash;
+  assert.equal(startPractice(s, 4), true);
+  assert.equal(s.cash, cash - 400);
+  const skill = s.skill;
+  practiceDay(s);
+  assert.equal(s.skill, Math.min(skill + 10, 255));
+});
+
+test("disasters need a gold disc and at least £1m", () => {
+  const s = new Session(data, { seed: 12n }).state;
+  s.cash = 500_000;
+  s.discs[0] = true;
+  assert.equal(disasterCheck(s), null);
+});
+
+test("a scripted tour runs its nights and keeps the log", () => {
+  const session = new Session(data, { seed: 21n });
+  const before = session.log.length;
+  assert.equal(session.tour(0, 0, 5).ok, true);
+  assert.ok(session.log.length >= before + 6);
+  assert.ok(session.log.some((l) => l.startsWith("Night 5:")));
+});

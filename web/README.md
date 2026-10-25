@@ -60,6 +60,9 @@ The band is hired from a roster of 20 invented stars, one to four at a time. Mon
 
 ## Run the tests and the demo
 
+    npm test                          # unit, rules and static page checks
+    node tools/build.mjs && node test/ui.browser.mjs   # clicks through the built page in Chromium (needs Playwright)
+
 Requires Node 22.6 or later.
 
     cd web

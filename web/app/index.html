@@ -5,39 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rock Star Remake</title>
 <style>
-:root { --bg: #f7f5f0; --fg: #1d1b18; --muted: #6b665d; --accent: #b3261e; --panel: #ffffff; --line: #d9d4c7; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #161513; --fg: #ece9e1; --muted: #9b968a; --accent: #ff7a6e; --panel: #201e1b; --line: #3a362f; }
+/* ZX Spectrum look: black screen, bright attribute colours, blocky type, bordered windows. */
+:root {
+  --black: #000; --blue: #0000d7; --red: #d70000; --magenta: #d700d7;
+  --green: #00d700; --cyan: #00d7d7; --yellow: #d7d700; --white: #d7d7d7;
+  --bright-cyan: #00ffff; --bright-yellow: #ffff00; --bright-white: #ffffff;
+  --bright-green: #00ff00; --bright-red: #ff0000;
 }
-:root[data-theme="dark"] { --bg: #161513; --fg: #ece9e1; --muted: #9b968a; --accent: #ff7a6e; --panel: #201e1b; --line: #3a362f; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.4 system-ui, sans-serif; }
-main { max-width: 760px; margin: 0 auto; padding: 16px; }
-h1 { font-size: 22px; margin: 8px 0 12px; }
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+* { box-sizing: border-box; }
+html, body { background: var(--black); }
+body {
+  margin: 0; color: var(--bright-white);
+  font: 16px/1.35 "Courier New", Courier, ui-monospace, monospace;
+  text-transform: uppercase; letter-spacing: .02em;
+}
+main { max-width: 760px; margin: 0 auto; padding: 12px; }
+.stripes { height: 10px; display: flex; margin-bottom: 8px; }
+.stripes i { flex: 1; }
+.stripes i:nth-child(1) { background: var(--red); }
+.stripes i:nth-child(2) { background: var(--yellow); }
+.stripes i:nth-child(3) { background: var(--green); }
+.stripes i:nth-child(4) { background: var(--cyan); }
+.stripes i:nth-child(5) { background: var(--blue); }
+.stripes i:nth-child(6) { background: var(--magenta); }
+h1 {
+  font-size: 26px; margin: 4px 0 12px; text-align: center; color: var(--bright-yellow);
+  text-shadow: 2px 2px 0 var(--red);
+}
+.panel {
+  border: 3px solid var(--cyan); padding: 10px 12px; margin-bottom: 12px; position: relative;
+  background: var(--black);
+}
+.panel > b:first-child, .panel > .title {
+  display: inline-block; background: var(--cyan); color: var(--black); padding: 0 6px; margin: -22px 0 8px -4px;
+}
 .panel[hidden], .row[hidden] { display: none; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-.stat b { display: block; font-size: 18px; }
-.stat span { color: var(--muted); font-size: 13px; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
-button, select, input { font: inherit; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); }
-button { cursor: pointer; }
-button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-button:disabled { opacity: .5; cursor: default; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px 10px; }
+.stat b { display: block; font-size: 18px; color: var(--bright-yellow); font-weight: normal; }
+.stat span { color: var(--bright-cyan); font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+label { color: var(--bright-cyan); font-size: 14px; }
+button, select, input {
+  font: inherit; text-transform: uppercase; color: var(--bright-yellow); background: var(--black);
+  border: 2px solid var(--yellow); padding: 6px 9px; border-radius: 0; cursor: pointer;
+}
+button:hover:not(:disabled), button:focus-visible { background: var(--yellow); color: var(--black); outline: none; }
+button.primary { color: var(--black); background: var(--bright-green); border-color: var(--bright-green); }
+button.primary:hover:not(:disabled) { background: var(--bright-white); border-color: var(--bright-white); }
+button:disabled { color: var(--white); border-color: var(--white); opacity: .45; cursor: default; }
+select option { background: var(--black); color: var(--bright-yellow); }
+input { color: var(--bright-white); border-color: var(--cyan); }
 #log { max-height: 280px; overflow-y: auto; font-size: 14px; }
-#log div { padding: 3px 0; border-bottom: 1px dotted var(--line); }
-.msg { min-height: 1.4em; color: var(--accent); }
-.muted { color: var(--muted); }
-.star { display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px dotted var(--line); }
-.star span { color: var(--muted); font-size: 13px; margin-left: auto; }
-@media (max-width: 480px) { main { padding: 12px; } }
+#log div { padding: 2px 0; color: var(--bright-white); }
+#log div:first-child { color: var(--bright-yellow); }
+.msg { min-height: 1.4em; color: var(--bright-green); font-size: 15px; }
+.muted { color: var(--cyan); font-size: 14px; }
+.star { display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px dotted var(--blue); color: var(--bright-white); cursor: pointer; }
+.star span { color: var(--bright-cyan); font-size: 13px; margin-left: auto; }
+.star input { width: 18px; height: 18px; accent-color: var(--bright-yellow); }
+#offerText, #promptText { color: var(--bright-red); }
+@media (max-width: 480px) { main { padding: 8px; } h1 { font-size: 20px; } }
 </style>
 </head>
 <body>
 <main>
-  <h1>Rock Star Remake</h1>
+  <div class="stripes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <h1>ROCK STAR ATE MY HAMSTER</h1>
+  <p class="muted" style="text-align:center">REMAKE &middot; 1 TO 4 STARS &middot; 1 YEAR TO PLATINUM</p>
 
   <div class="panel" id="hire">
-    <b>Hire your band</b>
+    <span class="title">HIRE YOUR BAND</span>
     <p class="muted">Pick one to four stars. Skill and fame come from the band you hire.</p>
     <div id="roster"></div>
     <div class="row"><span id="hireCount"></span><button id="startBand" class="primary" disabled>Start the band</button></div>
@@ -45,6 +82,7 @@ button:disabled { opacity: .5; cursor: default; }
 
   <div id="game" hidden>
     <div class="panel">
+      <span class="title">BAND SHEET</span>
       <div class="stats">
         <div class="stat"><b id="date">-</b><span>Date</span></div>
         <div class="stat"><b id="cash">-</b><span>Cash</span></div>
@@ -58,11 +96,13 @@ button:disabled { opacity: .5; cursor: default; }
     </div>
 
     <div class="panel" id="promptPanel" hidden>
+      <span class="title">MESSAGE</span>
       <div class="row"><span id="promptText"></span></div>
       <div class="row" id="promptButtons"></div>
     </div>
 
     <div class="panel">
+      <span class="title">ACTIONS</span>
       <div class="row">
         <button id="day">Next day</button>
         <button id="week">Next week</button>
@@ -103,7 +143,7 @@ button:disabled { opacity: .5; cursor: default; }
     </div>
 
     <div class="panel">
-      <b>Log</b>
+      <span class="title">LOG</span>
       <div id="log"></div>
     </div>
   </div>
